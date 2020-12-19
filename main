@@ -1,0 +1,38 @@
+(defn dec2bin
+  "Given d as a decimal number the output will be the binary representation of d"
+  ([d] (dec2bin d []))
+                ([d b] (if (= 0 d)
+                         b
+                         (recur (quot d 2) (conj b (rem d 2))))))
+                         
+(defn ffd
+    "Given fib(n+1) and fib(n) as input the output is fib(2n+1) and fib(2n)"
+    ([x] (let [a (first x) b (second x)]
+         (list (+ (* a a) (* b b)) (* b (- (* 2 a) b))))))
+
+(defn f2l
+    "Given (fib(n+1),fib(n)) as first and (fib(m+1),fib(m)) as second argument the output is (fib(n*m+1),fib(n*m))"
+    [x y] (let [n+1 (first x)
+                n (second x)
+                m+1 (first y)
+                m (second y)
+                n*m+1 (+ (* n+1 m+1) (* n m))
+                n*m (+ (* n+1 m) (* n (- m+1 m)))]
+                    (list n*m+1 n*m)
+                    ))
+                    
+(defn rfib
+    "Given first the binary representation without first bit, second the pairwise listed (fib(2^x),fib(2^x+1)) the output is (fib(n+1),fib(n))"
+    ([s f] (rfib '(1N 0N) s f))
+    ([r s f] (case (first s)
+                 0 (recur r (rest s) (rest f))
+                 1 (recur (f2l r (first f)) (rest s) (rest f))
+                 r)))
+
+(defn fib [n] (let [n-binary (dec2bin n)
+                    steps (- (count n-binary) 1)
+                    full (take steps (iterate ffd '(2N 1N)))
+                    result (rfib (drop 1 n-binary) full)]
+                  (if (even? n)
+                      (second result)
+                      (first result))))
